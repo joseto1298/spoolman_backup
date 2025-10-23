@@ -10,13 +10,6 @@ except ImportError as e:
     print(f"❌ Error al cargar config.py: {e}", file=sys.stderr)
     sys.exit(1)
 
-# Importamos requests desde entorno virtual
-try:
-    import requests
-except ImportError:
-    print("❌ requests no está instalado en el entorno virtual. Ejecuta: pip install requests", file=sys.stderr)
-    sys.exit(1)
-
 def fetch_spoolman_data():
     """Obtiene datos de Spoolman"""
     data = {}
@@ -29,7 +22,7 @@ def fetch_spoolman_data():
             json_data = response.json()
             # Si devuelve paginado, usamos 'results', si no devolvemos todo
             data[endpoint] = json_data.get("results", json_data) if isinstance(json_data, dict) else json_data
-            print(f"✅ {endpoint}: {len(data[endpoint])} registros")
+            #print(f"✅ {endpoint}: {len(data[endpoint])} registros")
         except Exception as e:
             print(f"❌ Error en {endpoint}: {e}", file=sys.stderr)
             data[endpoint] = []
@@ -41,7 +34,7 @@ def save_json(data, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-    print(f"💾 Datos guardados en {path}")
+    #print(f"💾 Datos guardados en {path}")
 
 def main():
     data = fetch_spoolman_data()
