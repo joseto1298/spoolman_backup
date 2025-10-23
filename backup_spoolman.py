@@ -2,6 +2,8 @@
 import os
 import sys
 import json
+import requests
+
 
 # Importamos configuración
 try:
