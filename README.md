@@ -93,6 +93,7 @@ type: git_repo
 path: /home/pi/spoolman_backup
 origin: https://github.com/joseto1298/spoolman_backup
 primary_branch: main
+is_system_service: False
 ```
 
 ## Ejecución desde Klipper (G-code)
