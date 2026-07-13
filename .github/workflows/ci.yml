@@ -23,6 +23,10 @@ jobs:
           else
             echo "No requirements.txt found"
           fi
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check .
       - name: Basic syntax check (Python files)
         run: |
           python - <<'PY'
