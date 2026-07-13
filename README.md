@@ -29,6 +29,15 @@ El resultado es un único fichero JSON que puede importarse o consultarse fuera 
 ```bash
 git clone https://github.com/joseto1298/spoolman_backup.git
 cd spoolman_backup
+chmod +x setup.sh
+./setup.sh
+```
+
+O manualmente:
+
+```bash
+git clone https://github.com/joseto1298/spoolman_backup.git
+cd spoolman_backup
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
