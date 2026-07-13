@@ -90,9 +90,27 @@ Este proyecto incluye un fichero `moonraker.conf` para gestionar actualizaciones
 ```ini
 [update_manager klipper-backup]
 type: git_repo
-path: ~/spoolman_backup
+path: /home/pi/spoolman_backup
 origin: https://github.com/joseto1298/spoolman_backup
 primary_branch: main
+```
+
+## Ejecución desde Klipper (G-code)
+
+El fichero `spoolman_backup.cfg` define un comando G-code para ejecutar el backup directamente desde la impresora. Añade esto a tu configuración de Klipper:
+
+```ini
+[gcode_shell_command _BACKUP_SPOOLMAN]
+# Realiza una copia de seguridad de la base de datos de Spoolman
+command: /home/pi/spoolman_backup/venv/bin/python3 /home/pi/spoolman_backup/backup_spoolman.py
+timeout: 30
+verbose: True
+```
+
+Luego ejecuta desde la consola G-code:
+
+```
+_BACKUP_SPOOLMAN
 ```
 
 ## Licencia
