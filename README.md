@@ -24,6 +24,47 @@ El resultado es un único fichero JSON que puede importarse o consultarse fuera 
 - Configuración vía variables de entorno
 - Soporte para respuestas paginadas de la API
 
+## Cómo funciona
+
+El script sigue un flujo simple de 3 pasos:
+
+### 1. Configuración (`config.py`)
+
+Carga los parámetros desde variables de entorno con valores por defecto:
+
+| Variable | Por defecto | Descripción |
+|---|---|---|
+| `SPOOLMAN_URL` | `http://localhost:7912/api/v1` | URL base de la API de Spoolman |
+| `OUTPUT_PATH` | `/home/pi/.../data.json` | Ruta del fichero JSON de salida |
+| `TIMEOUT` | `30` | Timeout en segundos para las peticiones HTTP |
+| `ENDPOINTS` | `["spool", "material", "filament"]` | Endpoints de la API a consultar |
+
+### 2. Obtención de datos (`backup_spoolman.py`)
+
+- **`fetch_spoolman_data()`**: Itera sobre los 3 endpoints configurados, construye la URL `{SPOOLMAN_URL}/{endpoint}/` y llama a `fetch_with_retry()`.
+- **`fetch_with_retry()`**: Realiza peticiones GET con reintentos y backoff exponencial (1s, 2s, 4s). Maneja 3 tipos de error:
+  - **Conexión / Timeout** → reintenta hasta 3 veces
+  - **HTTP 5xx** → reintenta hasta 3 veces
+  - **HTTP 4xx / JSON inválido** → no reintenta, retorna `None`
+- **Paginación**: Si la respuesta del API contiene una clave `results`, la extrae; si no, usa la respuesta completa.
+- **Degradación elegante**: Si un endpoint falla completamente, guarda una lista vacía `[]` en vez de abortar todo el backup.
+
+### 3. Guardado (`save_json()`)
+
+Crea los directorios padre si no existen y escribe el JSON con indentación de 4 espacios en la ruta configurada.
+
+### Flujo general
+
+```
+┌──────────────────┐   HTTP GET   ┌──────────────┐   JSON    ┌──────────┐
+│ backup_spoolman  │ ───────────→ │   Spoolman   │ ────────→ │ data.json│
+│      .py         │ /api/v1/     │   API:7912   │  backup   │          │
+└──────────────────┘ spool/material└──────────────┘          └──────────┘
+      ↑                                                        │
+      │  cron / G-code _BACKUP_SPOOLMAN                        │
+      └────────────────────────────────────────────────────────┘
+```
+
 ## Instalación
 
 ```bash
